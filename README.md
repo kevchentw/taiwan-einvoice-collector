@@ -53,6 +53,23 @@
 | **AI 範本** | 預設的 AI 提示詞（分類、消費分析、訂閱服務分析、異常消費、產生本月 AI 洞察），一鍵複製貼到 ChatGPT 等工具使用 |
 | **設定** | 發票同步、同步歷史紀錄、資料匯出等設定 |
 
+## Web App 畫面截圖
+
+<table>
+  <tr>
+    <td><img src="docs/images/IMG_4006.PNG" alt="Web App 首頁儀表板" width="220"></td>
+    <td><img src="docs/images/IMG_4007.PNG" alt="Web App 發票清單" width="220"></td>
+    <td><img src="docs/images/IMG_4008.PNG" alt="Web App 分類彙總" width="220"></td>
+    <td><img src="docs/images/IMG_4009.PNG" alt="Web App AI 洞察" width="220"></td>
+  </tr>
+  <tr>
+    <td align="center">首頁儀表板</td>
+    <td align="center">發票清單</td>
+    <td align="center">分類彙總</td>
+    <td align="center">AI 洞察</td>
+  </tr>
+</table>
+
 ## 分類、消費分析與自動化
 
 本專案刻意**不**內建分類器或對外 webhook。發票一旦同步進 Google Sheet，這份表格本身就是整合的入口——直接把任何你想用的工具接到這個檔案即可。
