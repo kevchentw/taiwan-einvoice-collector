@@ -22,7 +22,6 @@
    |---|---|---|
    | `EINVOICE_MOBILE` | 是 | 你在電子發票平台登入用的手機號碼 |
    | `EINVOICE_PASSWORD` | 是 | 電子發票平台密碼 |
-   | `SPREADSHEET_ID` | 是 | 你複製出來的試算表網址中的 ID |
    | `PERIODS_TO_FETCH` | 否（預設 `3`） | 要同步幾個雙月期（2 個月一期）的資料 |
 
 4. 在 Apps Script 編輯器中執行一次 `syncTaiwanEInvoicesToSheet` 以授權腳本（因為這是你自己的個人副本，Google 會顯示「未經驗證的應用程式」警告，點選 **進階 → 前往（專案名稱）（不安全）** 即可繼續）。
