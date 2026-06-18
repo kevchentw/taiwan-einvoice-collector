@@ -1,0 +1,10 @@
+{
+  "name": "taiwan-einvoice-collector",
+  "version": "0.1.0",
+  "description": "Open-source Taiwan e-invoice collector for Google Apps Script: auto-fetch invoices, web app, AI categorization, and webhook automation.",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "lint": "for f in src/*.js; do node --check \"$f\" || exit 1; done"
+  }
+}
