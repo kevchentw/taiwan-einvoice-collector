@@ -7,6 +7,7 @@ function doGet() {
   return HtmlService.createTemplateFromFile("InvoiceUi")
     .evaluate()
     .setTitle("電子發票")
+    .addMetaTag("viewport", "width=device-width, initial-scale=1")
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 
@@ -15,7 +16,7 @@ function readTableObjects_(spreadsheet, sheetName) {
   if (!sheet || sheet.getLastRow() < 2 || sheet.getLastColumn() < 1) return [];
 
   const values = sheet.getRange(1, 1, sheet.getLastRow(), sheet.getLastColumn()).getValues();
-  const headers = values[0].map(function (header) { return String(header || "").trim(); });
+  const headers = values[0].map(function (header) { return compactHeaderName_(header); });
 
   return values.slice(1).map(function (row) {
     const item = {};
@@ -24,6 +25,10 @@ function readTableObjects_(spreadsheet, sheetName) {
     });
     return item;
   });
+}
+
+function compactHeaderName_(header) {
+  return String(header || "").trim().replace(/\s+/g, "");
 }
 
 function numberValue_(value) {

@@ -31,16 +31,16 @@ const EINVOICE_RSA_PUBLIC_KEY =
   "</RSAKeyValue>";
 
 const INVOICE_HEADERS = [
-  "Invoice Number",
+  "InvoiceNumber",
   "Date",
   "Month",
   "Seller",
   "Amount",
-  "Main Category",
+  "MainCategory",
   "Subcategory",
   "Carrier",
   "Period",
-  "Fetched At",
+  "FetchedAt",
   "Note",
   "Items",
 ];
@@ -50,16 +50,16 @@ const INVOICE_ITEMS_FORMULA =
 
 const INVOICE_DETAIL_SHEET_NAME = "InvoiceDetails";
 const INVOICE_DETAIL_HEADERS = [
-  "Item Key",
-  "Invoice Number",
+  "ItemKey",
+  "InvoiceNumber",
   "Date",
   "Month",
   "Seller",
-  "Item Description",
-  "Item Quantity",
-  "Item Unit Price",
-  "Item Amount",
-  "Fetched At",
+  "ItemDescription",
+  "ItemQuantity",
+  "ItemUnitPrice",
+  "ItemAmount",
+  "FetchedAt",
 ];
 
 function syncTaiwanEInvoicesToSheet() {
@@ -105,22 +105,20 @@ function syncTaiwanEInvoicesForPeriods_(periods) {
       const invoiceAmount = firstValue_(invoice, ["amount", "InvTransAmt"]);
       const seller = firstValue_(invoice, ["sellerName", "SellerName"]);
       if (!existingInvoiceNumbers[invoiceNumber]) {
-        invoiceRows.push([
-          invoiceNumber,
-          invoiceDate,
-          invoiceMonth,
-          seller,
-          invoiceAmount,
-          "",
-          "",
-          "",
-          "",
-          client.currentUser.mobileBarcode || "",
-          period.label,
-          fetchedAt,
-          "",
-          "",
-        ]);
+        invoiceRows.push(valuesForHeaders_(INVOICE_HEADERS, {
+          InvoiceNumber: invoiceNumber,
+          Date: invoiceDate,
+          Month: invoiceMonth,
+          Seller: seller,
+          Amount: invoiceAmount,
+          MainCategory: "",
+          Subcategory: "",
+          Carrier: client.currentUser.mobileBarcode || "",
+          Period: period.label,
+          FetchedAt: fetchedAt,
+          Note: "",
+          Items: "",
+        }));
         existingInvoiceNumbers[invoiceNumber] = true;
       }
 
@@ -142,18 +140,18 @@ function syncTaiwanEInvoicesForPeriods_(periods) {
         const itemKey = invoiceDetailKey_(invoiceNumber, item, index);
         if (existingDetailKeys[itemKey]) return;
 
-        detailRows.push([
-          itemKey,
-          invoiceNumber,
-          invoiceDate,
-          invoiceMonth,
-          seller,
-          firstValue_(item, ["description", "Description", "itemName", "ItemName"]),
-          firstValue_(item, ["quantity", "Quantity", "qty", "Qty"]),
-          firstValue_(item, ["unitPrice", "UnitPrice"]),
-          firstValue_(item, ["amount", "Amount"]),
-          fetchedAt,
-        ]);
+        detailRows.push(valuesForHeaders_(INVOICE_DETAIL_HEADERS, {
+          ItemKey: itemKey,
+          InvoiceNumber: invoiceNumber,
+          Date: invoiceDate,
+          Month: invoiceMonth,
+          Seller: seller,
+          ItemDescription: firstValue_(item, ["description", "Description", "itemName", "ItemName"]),
+          ItemQuantity: firstValue_(item, ["quantity", "Quantity", "qty", "Qty"]),
+          ItemUnitPrice: firstValue_(item, ["unitPrice", "UnitPrice"]),
+          ItemAmount: firstValue_(item, ["amount", "Amount"]),
+          FetchedAt: fetchedAt,
+        }));
         existingDetailKeys[itemKey] = true;
       });
     }
@@ -306,6 +304,8 @@ function getOrCreateSheet_(spreadsheet, sheetName, headers) {
 }
 
 function ensureSheetHeaders_(sheet, headers) {
+  renameLegacyHeaders_(sheet, headers);
+
   for (let i = 0; i < headers.length; i++) {
     const currentLastColumn = Math.max(sheet.getLastColumn(), 1);
     const currentHeaders = sheet.getRange(1, 1, 1, currentLastColumn).getValues()[0].map(function (header) {
@@ -317,6 +317,22 @@ function ensureSheetHeaders_(sheet, headers) {
     sheet.insertColumnBefore(i + 1);
     sheet.getRange(1, i + 1).setValue(headers[i]);
   }
+}
+
+function renameLegacyHeaders_(sheet, headers) {
+  const currentLastColumn = sheet.getLastColumn();
+  if (currentLastColumn < 1) return;
+
+  const currentHeaders = sheet.getRange(1, 1, 1, currentLastColumn).getValues()[0];
+  currentHeaders.forEach(function (header, index) {
+    const current = String(header || "").trim();
+    const compact = compactSheetHeaderName_(current);
+    if (current !== compact && headers.indexOf(compact) !== -1) sheet.getRange(1, index + 1).setValue(compact);
+  });
+}
+
+function compactSheetHeaderName_(header) {
+  return String(header || "").replace(/\s+/g, "");
 }
 
 function ensureItemsFormula_(sheet) {
@@ -408,6 +424,12 @@ function firstValue_(obj, keys) {
     if (obj && obj[key] != null) return obj[key];
   }
   return "";
+}
+
+function valuesForHeaders_(headers, valuesByHeader) {
+  return headers.map(function (header) {
+    return valuesByHeader[header] == null ? "" : valuesByHeader[header];
+  });
 }
 
 function recentInvoicePeriods_(count) {

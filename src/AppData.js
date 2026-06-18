@@ -22,7 +22,7 @@ function ensureCategoriesSheet_(spreadsheet) {
   const sheet = spreadsheet.getSheetByName(UI_CATEGORIES_SHEET_NAME) || spreadsheet.insertSheet(UI_CATEGORIES_SHEET_NAME);
   if (sheet.getLastRow() > 0) return sheet;
 
-  const headers = ["Main Category", "Subcategory"];
+  const headers = ["MainCategory", "Subcategory"];
   const rows = [];
   Object.keys(APP_CATEGORIES_DEFAULT_).forEach(function (mainCategory) {
     APP_CATEGORIES_DEFAULT_[mainCategory].forEach(function (subcategory) {
@@ -42,9 +42,9 @@ const APP_PROMPTS_DEFAULT_ = [
     title: "分類並寫回這個表單",
     prompt:
       "你是我的記帳助理。請打開這份 Google 試算表：{{SPREADSHEET_URL}}\n" +
-      "讀取 Invoices 工作表中尚未分類（Main Category 或 Subcategory 為空）的發票，" +
+      "讀取 Invoices 工作表中尚未分類（MainCategory 或 Subcategory 為空）的發票，" +
       "並依據商店名稱與品項，幫每一筆挑選最合適的主類別與子類別（請參考 Categories 工作表中的既有分類），" +
-      "然後將結果寫回 Invoices 工作表對應的 Main Category / Subcategory 欄位。",
+      "然後將結果寫回 Invoices 工作表對應的 MainCategory / Subcategory 欄位。",
   },
   {
     title: "這個月的消費分析",
@@ -147,7 +147,7 @@ function getAppCategories_(spreadsheet) {
 
   const categories = {};
   rows.forEach(function (row) {
-    const mainCategory = String(row["Main Category"] || "").trim();
+    const mainCategory = String(row.MainCategory || "").trim();
     const subcategory = String(row.Subcategory || "").trim();
     if (!mainCategory || !subcategory) return;
     if (!categories[mainCategory]) categories[mainCategory] = [];
@@ -207,13 +207,13 @@ function updateInvoice(params) {
   if (!sheet) throw new Error("Invoices sheet not found.");
 
   const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0].map(function (header) {
-    return String(header || "").trim();
+    return compactHeaderName_(header);
   });
-  const idColumn = headers.indexOf("Invoice Number") + 1;
-  const mainCategoryColumn = headers.indexOf("Main Category") + 1;
+  const idColumn = headers.indexOf("InvoiceNumber") + 1;
+  const mainCategoryColumn = headers.indexOf("MainCategory") + 1;
   const subcategoryColumn = headers.indexOf("Subcategory") + 1;
   const noteColumn = headers.indexOf("Note") + 1;
-  if (!idColumn) throw new Error("Invoice Number column not found.");
+  if (!idColumn) throw new Error("InvoiceNumber column not found.");
 
   const ids = sheet.getRange(2, idColumn, Math.max(sheet.getLastRow() - 1, 0), 1).getValues();
   let rowIndex = -1;
@@ -305,10 +305,10 @@ function csvEscape_(value) {
 
 function normalizeInvoiceForApp_(row) {
   const rawDate = row.Date;
-  const mainCategory = String(row["Main Category"] || "") || "其他";
+  const mainCategory = String(row.MainCategory || "") || "其他";
   const subcategory = String(row.Subcategory || "") || "未分類";
   return {
-    id: String(row["Invoice Number"] || ""),
+    id: String(row.InvoiceNumber || ""),
     date: dateOnlyForApp_(rawDate),
     time: timeOnlyForApp_(rawDate),
     seller: String(row.Seller || ""),
@@ -316,18 +316,18 @@ function normalizeInvoiceForApp_(row) {
     mainCategory: mainCategory,
     subcategory: subcategory,
     note: String(row.Note || ""),
-    fetchedAt: String(row["Fetched At"] || ""),
+    fetchedAt: String(row.FetchedAt || ""),
     items: [],
   };
 }
 
 function normalizeDetailForApp_(row) {
   return {
-    invoiceNumber: String(row["Invoice Number"] || ""),
-    description: String(row["Item Description"] || ""),
-    quantity: row["Item Quantity"],
-    unitPrice: row["Item Unit Price"],
-    amount: numberValue_(row["Item Amount"]),
+    invoiceNumber: String(row.InvoiceNumber || ""),
+    description: String(row.ItemDescription || ""),
+    quantity: row.ItemQuantity,
+    unitPrice: row.ItemUnitPrice,
+    amount: numberValue_(row.ItemAmount),
   };
 }
 
