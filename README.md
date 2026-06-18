@@ -14,7 +14,7 @@
 
 透過範本試算表安裝：
 
-1. 開啟 [Taiwan E-Invoice Collector 範本試算表](https://docs.google.com/spreadsheets/d/REPLACE_WITH_TEMPLATE_ID/copy)，點選 **使用範本**（這會建立屬於你自己的副本，你的發票資料不會碰到別人的試算表）。
+1. 開啟 [Taiwan E-Invoice Collector 範本試算表](https://docs.google.com/spreadsheets/d/1355FPdglSwXjqbiN6hw-VQEC_BGJdqb4G71tQeHsJ5s/copy)，點選 **使用範本**（這會建立屬於你自己的副本，你的發票資料不會碰到別人的試算表）。
 2. 在你的副本中，開啟 **擴充功能 → Apps Script**，腳本已經綁定到你的試算表。
 3. 前往 **專案設定 → Script properties**，新增以下屬性：
 
@@ -23,7 +23,6 @@
    | `EINVOICE_MOBILE` | 是 | 你在電子發票平台登入用的手機號碼 |
    | `EINVOICE_PASSWORD` | 是 | 電子發票平台密碼 |
    | `SPREADSHEET_ID` | 是 | 你複製出來的試算表網址中的 ID |
-   | `SHEET_NAME` | 否（預設 `Invoices`） | 存放發票資料的分頁名稱 |
    | `PERIODS_TO_FETCH` | 否（預設 `3`） | 要同步幾個雙月期（2 個月一期）的資料 |
 
 4. 在 Apps Script 編輯器中執行一次 `syncTaiwanEInvoicesToSheet` 以授權腳本（因為這是你自己的個人副本，Google 會顯示「未經驗證的應用程式」警告，點選 **進階 → 前往（專案名稱）（不安全）** 即可繼續）。
